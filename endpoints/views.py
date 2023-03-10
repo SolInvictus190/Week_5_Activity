@@ -44,13 +44,16 @@ class UserListAPIView(APIView):
             return Response(data)
         except User.DoesNotExist:
             raise Http404
+
 class UserDetailsAPIView(APIView):
     permission_classes = (IsAuthenticated,)
+
     def get_user(self, pk):
         try:
             return User.objects.get(pk=pk)
         except User.DoesNotExist:
             raise Http404
+
     def get(self, request, pk):
         user = self.get_user(pk)
         if user == request.user:
@@ -58,10 +61,11 @@ class UserDetailsAPIView(APIView):
         else:
             serializer = UserSerializer(user, fields=('last_name',))
         return Response(serializer.data)
+
     def put(self, request, pk):
         user = self.get_user(pk)
         if user != request.user:
-            return Response({'detail': 'You do not have permission to perform this action.'}, status=status.HTTP_403_FORBIDDEN)
+            return Response({'detail': 'You are not allowed to perform this action!'}, status=status.HTTP_403_FORBIDDEN)
         serializer = UserSerializer(user, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -72,7 +76,7 @@ class UserDetailsAPIView(APIView):
         user = self.get_user(pk)
 
         if user != request.user:
-            return Response({'detail': 'You do not have permission to perform this action.'}, status=status.HTTP_403_FORBIDDEN)
+            return Response({'detail': 'You are not allowed to perform this action!'}, status=status.HTTP_403_FORBIDDEN)
         serializer = UserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -80,13 +84,21 @@ class UserDetailsAPIView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class RetrieveUserAPIView(APIView):
     permission_classes = (IsAuthenticated,)
+
+    def get_user(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise Http404
+
     def get(self, request, pk):
         user = self.get_user(pk)
         if user == request.user:
             serializer = UserSerializer(user)
         else:
-            serializer = UserSerializer(user, fields=('last_name'))
+            serializer = UserSerializer(user, fields=('last_name',))
         return Response(serializer.data)
 
