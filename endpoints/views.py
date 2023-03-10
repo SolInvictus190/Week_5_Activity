@@ -89,18 +89,3 @@ class UserDetailsAPIView(APIView):
     def patch(self, request, pk):
         return self.put(request, pk)
 
-class UserProfileAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request, user_id=None):
-        if user_id is None:
-            user = request.user
-            serializer = UserSerializer(user)
-            return Response(serializer.data)
-        else:
-            try:
-                user = User.objects.get(id=user_id)
-                serializer = UserSerializer(user, fields=('id', 'last_name'))
-                return Response(serializer.data)
-            except User.DoesNotExist:
-                raise Http404
