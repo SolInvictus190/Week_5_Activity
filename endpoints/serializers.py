@@ -5,6 +5,8 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 
+
+
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
@@ -63,3 +65,11 @@ class RegisterSerializer(serializers.ModelSerializer):
     user.set_password(validated_data['password'])
     user.save()
     return user
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'first_name', 'last_name')
+
+
